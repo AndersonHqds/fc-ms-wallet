@@ -1,9 +1,11 @@
-package createtransaction
+package create_transaction
 
 import (
 	"testing"
 
 	"github.com.br/andersonhqds/fc-ms-wallet/internal/entity"
+	"github.com.br/andersonhqds/fc-ms-wallet/internal/event"
+	"github.com.br/andersonhqds/fc-ms-wallet/pkg/events"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -52,7 +54,10 @@ func TestCreateTransactionUseCase_Execute(t *testing.T) {
 	transactionGatewayMock := &TransactionGatewayMock{}
 	transactionGatewayMock.On("Create", mock.Anything).Return(nil)
 
-	uc := NewCreateTransactionUseCase(transactionGatewayMock, accountGatewayMock)
+	dispatcher := events.NewEventDispatcher()
+	event := event.NewTransactionCreated()
+
+	uc := NewCreateTransactionUseCase(transactionGatewayMock, accountGatewayMock, dispatcher, event)
 	inputDto := CreateTransactionInputDTO{
 		AccountIDFrom: account1.ID,
 		AccountIDTo:   account2.ID,
